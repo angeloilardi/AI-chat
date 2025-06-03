@@ -1,14 +1,24 @@
-import { useState, useRef, useEffect, type JSX } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import { GoogleGenAI } from "@google/genai";
 import MarkdownView from "react-showdown";
 import { LoadingAnimation } from "./components/animations/LoadingAnimations";
 
+interface Message {
+  role: "user" | "model";
+  content: string;
+}
+
 function App() {
   const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState<
-    { role: string; content: string | JSX.Element }[]
-  >([]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem("chatMessages");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isLoading, setIsLoading] = useState(false);
   const chatWindow = useRef<HTMLDivElement | null>(null);
 
@@ -17,6 +27,10 @@ function App() {
       top: chatWindow.current.scrollHeight,
       behavior: "smooth",
     });
+  }, [messages]);
+
+  useEffect(() => {
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
 
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -31,11 +45,12 @@ function App() {
       model: "gemini-2.0-flash-001",
       contents: userInput,
     });
+
     console.log(response);
     setIsLoading(false);
     return {
-      role: "assistant",
-      content: <MarkdownView markdown={response.text || "No response"} />,
+      role: "model",
+      content: response.text || "No response",
     };
   }
 
@@ -43,7 +58,6 @@ function App() {
     e.preventDefault();
     const newMessage = { role: "user", content: userInput };
     setMessages([...messages, newMessage]);
-    console.log(messages);
 
     const assistantResponse = await getChatResponse(userInput);
     setMessages([...messages, newMessage, assistantResponse]);
@@ -56,18 +70,24 @@ function App() {
         className="mb-4 h-96 overflow-auto border rounded p-4"
         ref={chatWindow}
       >
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-2 ${
-              msg.role === "user" ? "text-right" : "text-left"
-            }`}
-          >
-            <span className="inline-block p-2 rounded bg-gray-100">
-              {msg.content}
-            </span>
-          </div>
-        ))}
+        {messages.map((msg: Message, index: number) =>
+          msg.role === "user" ? (
+            <div key={index} className="mb-2 text-right">
+              <small className="block">You</small>
+              <span className="inline-block p-2 rounded bg-gray-100">
+                {msg.content}
+              </span>
+            </div>
+          ) : (
+            <div key={index} className="mb-2 text-left">
+              <small className="block">Assistant</small>
+              <MarkdownView
+                markdown={msg.content}
+                className="bg-blue-100 p-2 rounded"
+              />
+            </div>
+          )
+        )}
         {isLoading && <LoadingAnimation />}
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
