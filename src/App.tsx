@@ -6,7 +6,7 @@ import { LoadingAnimation } from "./components/animations/LoadingAnimations";
 
 interface Message {
   role: "user" | "model";
-  content: string;
+  parts: { text: string }[];
 }
 
 function App() {
@@ -31,6 +31,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("chatMessages", JSON.stringify(messages));
+    console.log(messages);
   }, [messages]);
 
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -41,22 +42,34 @@ function App() {
 
   async function getChatResponse(userInput: string) {
     setIsLoading(true);
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-001",
-      contents: userInput,
-    });
-
-    console.log(response);
-    setIsLoading(false);
-    return {
-      role: "model",
-      content: response.text || "No response",
-    };
+    try {
+      const chat = ai.chats.create({
+        model: "gemini-2.0-flash",
+        history: messages,
+      });
+      const response = await chat.sendMessage({ message: userInput });
+      setIsLoading(false);
+      return {
+        role: "model",
+        parts: [{ text: response.text || "No response" }],
+      };
+    } catch (error: unknown) {
+      setIsLoading(false);
+      if (error instanceof Error) {
+        console.error("Error getting chat response:", error.message);
+      } else {
+        console.error("Error getting chat response:", error);
+      }
+      return {
+        role: "model",
+        parts: [{ text: "Sorry, there was an error processing your request." }],
+      };
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newMessage = { role: "user", content: userInput };
+    const newMessage = { role: "user", parts: [{ text: userInput }] };
     setMessages([...messages, newMessage]);
 
     const assistantResponse = await getChatResponse(userInput);
@@ -75,14 +88,14 @@ function App() {
             <div key={index} className="mb-2 text-right">
               <small className="block">You</small>
               <span className="inline-block p-2 rounded bg-gray-100">
-                {msg.content}
+                {msg.parts[0]?.text}
               </span>
             </div>
           ) : (
             <div key={index} className="mb-2 text-left">
               <small className="block">Assistant</small>
               <MarkdownView
-                markdown={msg.content}
+                markdown={msg.parts[0].text}
                 className="bg-blue-100 p-2 rounded"
               />
             </div>
