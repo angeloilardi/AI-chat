@@ -1,5 +1,36 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --text-huge: 10rem;
+  --animate-gradient: gradient 8s linear infinite;
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
