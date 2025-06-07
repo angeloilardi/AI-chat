@@ -26,6 +26,15 @@ function Chat() {
   const chatWindow = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (chatWindow.current) {
+      chatWindow.current.scrollTo({
+        top: chatWindow.current.scrollHeight,
+      });
+    }
+  }, [showResumePrompt]);
+
+  useEffect(() => {
+    console.log(chatWindow.current?.scrollHeight);
     chatWindow.current?.scrollTo({
       top: chatWindow.current.scrollHeight,
       behavior: "smooth",
@@ -122,7 +131,7 @@ function Chat() {
       ) : (
         <div>
           <div
-            className="mb-4 h-96 overflow-auto flex flex-col"
+            className="mb-4 h-[80dvh] overflow-auto flex flex-col"
             ref={chatWindow}
           >
             {messages.map((msg: Message, index: number) =>
