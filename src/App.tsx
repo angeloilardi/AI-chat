@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Chat from "./components/Chat";
 import Sidebar from "./components/Sidebar";
 import { v4 as uuidv4 } from "uuid";
@@ -6,6 +6,7 @@ import { GoogleGenAI } from "@google/genai";
 import GradientText from "./blocks/GradientText/GradientText";
 import { CiMenuBurger } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
+import useClickOutside from "./components/hooks/useClickOutside";
 
 interface Message {
   role: "user" | "model";
@@ -202,21 +203,35 @@ export default function App() {
   }, [activeConversation?.messages, currentChatID, fetchTitle]);
 
   const [openSidebar, setOpenSidebar] = useState(false);
+  const sidebarRef = useRef(null! as HTMLDivElement);
+
+  useClickOutside(sidebarRef, () => setOpenSidebar(false));
 
   return (
     <div
       className={"h-screen flex bg-gradient-to-r from-[#485563] to-[#29323c]"}
     >
-      <Sidebar
-        conversations={conversations}
-        activeId={currentChatID}
-        onCreate={createNewConversation}
-        onClear={(id: string) => () => deleteSelectedConversation(id)}
-        onSelect={(id: string) => setCurrentChatID(id)}
-        isOpen={openSidebar}
-      />
+      <div
+        ref={sidebarRef}
+        className={`
+          fixed z-30 inset-y-0 left-0 transform
+          bg-gray-900 text-white w-80 md:w-1/3 p-4
+          transition-transform duration-300 ease-in-out
+          ${openSidebar ? "translate-x-0" : "-translate-x-full"}
+          md:relative md:translate-x-0 md:flex md:flex-col md:shrink-0
+        `}
+      >
+        <Sidebar
+          conversations={conversations}
+          activeId={currentChatID}
+          onCreate={createNewConversation}
+          onClear={(id: string) => () => deleteSelectedConversation(id)}
+          onSelect={(id: string) => setCurrentChatID(id)}
+          isOpen={openSidebar}
+        />
+      </div>
       <div className="flex flex-col w-full">
-        <div className="flex px-6 gap-4">
+        <div className="flex gap-4">
           <button
             className="text-gray-100 p-2 z-50 md:hidden"
             onClick={() => setOpenSidebar((prev) => !prev)}
@@ -224,7 +239,9 @@ export default function App() {
             {/* Toggle sidebar visibility on mobile */}
             {openSidebar ? <IoMdClose size={20} /> : <CiMenuBurger size={20} />}
           </button>
-          <GradientText className="text-4xl font-bold !mx-0">FLUX</GradientText>
+          <GradientText className="text-4xl font-bold pl-4 !mx-0">
+            FLUX
+          </GradientText>
         </div>
         <Chat
           conversation={activeConversation}

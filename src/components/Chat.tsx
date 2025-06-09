@@ -33,7 +33,7 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
   }, [conversation?.messages]);
 
   return (
-    <div className=" rounded-lg shadow-lg border border-gray-700 w-full h-[90dvh] gap-6 flex flex-col p-2 flex-1 ">
+    <div className="rounded-lg shadow-lg border border-gray-700 w-full h-[90dvh] gap-6 flex flex-col p-2 flex-1 ">
       <div
         className="mb-2 flex flex-col flex-1 overflow-y-auto p-4"
         ref={chatWindow}
