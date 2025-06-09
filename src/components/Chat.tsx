@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-
 import MarkdownView from "react-showdown";
 import { LoadingAnimation } from "./animations/LoadingAnimations";
 
@@ -34,30 +33,32 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
   }, [conversation?.messages]);
 
   return (
-    <div className="bg-gradient-to-r from-[#485563] to-[#29323c] rounded-lg shadow-lg border border-gray-700 p-4 w-2/3 h-[90dvh] gap-6 flex flex-col">
+    <div className=" rounded-lg shadow-lg border border-gray-700 w-full h-[90dvh] gap-6 flex flex-col p-2 flex-1 ">
       <div
-        className="mb-4 flex flex-col flex-1 overflow-y-auto"
+        className="mb-2 flex flex-col flex-1 overflow-y-auto p-4"
         ref={chatWindow}
       >
-        {conversation?.messages.map((msg: Message, index: number) =>
-          msg.role === "user" ? (
-            <div key={index} className="mb-2 text-right">
-              <small className="block text-gray-100">You</small>
-              <span className="inline-block p-2 rounded bg-gray-100">
-                {msg.parts[0]?.text}
-              </span>
-            </div>
-          ) : (
-            <div key={index} className="mb-2 text-left">
-              <small className="block text-gray-100">Assistant</small>
-              <MarkdownView
-                markdown={msg.parts[0].text}
-                className="bg-blue-100 p-2 rounded"
-              />
-            </div>
-          )
-        )}
-        {isLoading && <LoadingAnimation />}
+        <div className="mt-auto">
+          {conversation?.messages.map((msg: Message, index: number) =>
+            msg.role === "user" ? (
+              <div key={index} className="mb-2 text-right">
+                <small className="block text-gray-100">You</small>
+                <span className="inline-block p-2 rounded bg-gray-100">
+                  {msg.parts[0]?.text}
+                </span>
+              </div>
+            ) : (
+              <div key={index} className="mb-2 text-left">
+                <small className="block text-gray-100">Assistant</small>
+                <MarkdownView
+                  markdown={msg.parts[0].text}
+                  className="bg-blue-100 p-2 rounded"
+                />
+              </div>
+            )
+          )}
+          {isLoading && <LoadingAnimation />}
+        </div>
       </div>
       <form
         onSubmit={(e) => {

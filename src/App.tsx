@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import GradientText from "./blocks/GradientText/GradientText";
 import Chat from "./components/Chat";
 import Sidebar from "./components/Sidebar";
 import { v4 as uuidv4 } from "uuid";
 import { GoogleGenAI } from "@google/genai";
+import GradientText from "./blocks/GradientText/GradientText";
+import { CiMenuBurger } from "react-icons/ci";
+import { IoMdClose } from "react-icons/io";
 
 interface Message {
   role: "user" | "model";
@@ -17,8 +19,6 @@ interface Conversation {
 }
 
 export default function App() {
-  const [showChat, setShowChat] = useState(false);
-
   // Initialize conversations and currentChatID together to avoid referencing each other
   const getInitialConversations = () => {
     const saved = localStorage.getItem("conversations");
@@ -185,18 +185,6 @@ export default function App() {
             );
           }
         }
-        // if (response.text) {
-        //   setConversations((prev) =>
-        //     prev.map((conv) =>
-        //       conv.id === currentChatID
-        //         ? {
-        //             ...conv,
-        //             title: response.text ?? "Untitled Conversation",
-        //           }
-        //         : conv
-        //     )
-        //   );
-        // }
       } catch (error) {
         console.error("Error getting chat response:", error);
       }
@@ -213,40 +201,37 @@ export default function App() {
     fetchTitle();
   }, [activeConversation?.messages, currentChatID, fetchTitle]);
 
+  const [openSidebar, setOpenSidebar] = useState(false);
+
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center">
-      <div className="flex flex-col items-center">
-        <GradientText
-          colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
-          animationSpeed={10}
-          showBorder={false}
-          className="text-6xl font-bold mb-4 text-center"
-        >
-          Welcome to Flux
-        </GradientText>
-        <button
-          className="flex cursor-pointer items-center justify-center overflow-hidden rounded-full p-4 bg-gradient-to-r from-[#40ffaa] to-[#4079ff] text-[#0e1a13] my-6 w-auto font-bold"
-          onClick={() => setShowChat(true)}
-        >
-          <span className="truncate">Start Chatting</span>
-        </button>
-      </div>
-      {showChat && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black z-50 gap-6 px-6">
-          <Sidebar
-            conversations={conversations}
-            activeId={currentChatID}
-            onCreate={createNewConversation}
-            onClear={(id: string) => () => deleteSelectedConversation(id)}
-            onSelect={(id: string) => setCurrentChatID(id)}
-          />
-          <Chat
-            conversation={activeConversation}
-            onSendMessage={handleSubmit}
-            isLoading={isLoading}
-          />
+    <div
+      className={"h-screen flex bg-gradient-to-r from-[#485563] to-[#29323c]"}
+    >
+      <Sidebar
+        conversations={conversations}
+        activeId={currentChatID}
+        onCreate={createNewConversation}
+        onClear={(id: string) => () => deleteSelectedConversation(id)}
+        onSelect={(id: string) => setCurrentChatID(id)}
+        isOpen={openSidebar}
+      />
+      <div className="flex flex-col w-full">
+        <div className="flex px-6 gap-4">
+          <button
+            className="text-gray-100 p-2 z-50 md:hidden"
+            onClick={() => setOpenSidebar((prev) => !prev)}
+          >
+            {/* Toggle sidebar visibility on mobile */}
+            {openSidebar ? <IoMdClose size={20} /> : <CiMenuBurger size={20} />}
+          </button>
+          <GradientText className="text-4xl font-bold !mx-0">FLUX</GradientText>
         </div>
-      )}
+        <Chat
+          conversation={activeConversation}
+          onSendMessage={handleSubmit}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }
