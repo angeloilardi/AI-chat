@@ -25,20 +25,30 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
   const chatWindow = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    chatWindow.current?.scrollTo({
-      top: chatWindow.current.scrollHeight,
-      behavior: "smooth",
-    });
+    if (chatWindow.current) {
+      const chatDiv = chatWindow.current;
+      // Find the latest user message element
+      const userMessages = chatDiv.querySelectorAll("div.text-right");
+      if (userMessages.length > 0) {
+        const latestUserMsg = userMessages[
+          userMessages.length - 1
+        ] as HTMLElement;
+        // Only scroll if content is overflowing
+        if (chatDiv.scrollHeight > chatDiv.clientHeight) {
+          chatDiv.scrollTo({
+            top: latestUserMsg.offsetTop,
+            behavior: "smooth",
+          });
+        }
+      }
+    }
     console.log(chatWindow.current?.scrollHeight);
   }, [conversation?.messages]);
 
   return (
     <div className="rounded-lg shadow-lg border border-gray-700 w-full h-[90dvh] gap-6 flex flex-col p-2 flex-1 ">
-      <div
-        className="mb-2 flex flex-col flex-1 overflow-y-auto p-4"
-        ref={chatWindow}
-      >
-        <div className="mt-auto">
+      <div className="mb-2 flex flex-col flex-1 overflow-y-auto p-4">
+        <div className="mt-auto" ref={chatWindow}>
           {conversation?.messages.map((msg: Message, index: number) =>
             msg.role === "user" ? (
               <div key={index} className="mb-2 text-right">
@@ -66,7 +76,7 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
           onSendMessage(userInput);
           setUserInput("");
         }}
-        className="flex gap-2"
+        className="flex gap-2 px-4"
       >
         <input
           type="text"
@@ -77,7 +87,7 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-gradient-to-r from-[#40ffaa] to-[#4079ff] text-[#0e1a13] font-bold rounded"
+          className="px-4 py-2 bg-gradient-to-r from-[#ffaa40] to-[#9c40ff] text-[#0e1a13] font-bold rounded"
           disabled={!userInput.trim() || isLoading}
         >
           Send

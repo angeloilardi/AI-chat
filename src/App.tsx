@@ -86,7 +86,7 @@ export default function App() {
   const createNewConversation = () => {
     const newConv = {
       id: uuidv4(),
-      title: `Conversation ${conversations.length + 1}`,
+      title: `New chat`,
       messages: [],
     };
     setConversations([...conversations, newConv]);
@@ -108,7 +108,7 @@ export default function App() {
       const newConvId = uuidv4();
       const newConv: Conversation = {
         id: newConvId,
-        title: `Conversation ${conversations.length + 1}`,
+        title: "New chat",
         messages: [{ role: "user", parts: [{ text: userInput }] }],
       };
       setConversations([...conversations, newConv]);
@@ -161,14 +161,7 @@ export default function App() {
           history: activeConversation?.messages,
         });
         // Only fetch title if it hasn't been set by the user or AI yet
-        if (
-          activeConversation?.title ===
-            `Conversation ${
-              conversations.findIndex((c) => c.id === currentChatID) + 1
-            }` ||
-          activeConversation?.title === "" ||
-          activeConversation?.title === "Untitled Conversation"
-        ) {
+        if (activeConversation?.title === "New chat") {
           const response = await chat.sendMessage({
             message:
               "Create a summary for this conversation using 5 words in one sentence",
@@ -194,7 +187,6 @@ export default function App() {
     activeConversation?.messages,
     activeConversation?.title,
     ai.chats,
-    conversations,
     currentChatID,
   ]);
 
@@ -239,7 +231,7 @@ export default function App() {
             {/* Toggle sidebar visibility on mobile */}
             {openSidebar ? <IoMdClose size={20} /> : <CiMenuBurger size={20} />}
           </button>
-          <GradientText className="text-4xl font-bold pl-4 !mx-0">
+          <GradientText className="text-4xl font-bold pl-4 !mx-0 md:hidden">
             FLUX
           </GradientText>
         </div>

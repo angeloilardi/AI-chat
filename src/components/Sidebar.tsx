@@ -37,7 +37,7 @@ export default function Sidebar({
       <p className="mb-4 font-bold">Coversations</p>
       {conversations.map((conversation) => (
         <li
-          className={`flex items-center gap-2 mb-2 p-2 rounded-md ${
+          className={`flex items-center gap-2 mb-2 p-2 cursor pointer rounded-md hover:bg-gray-600 ${
             activeId === conversation.id ? "bg-gray-300 text-black" : ""
           }`}
           key={conversation.id}
