@@ -46,6 +46,11 @@ export default function App() {
 
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 
+  useEffect(() => {
+    if (currentChatID && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [currentChatID]);
   const ai = new GoogleGenAI({
     apiKey: GEMINI_API_KEY,
   });
@@ -194,10 +199,10 @@ export default function App() {
     fetchTitle();
   }, [activeConversation?.messages, currentChatID, fetchTitle]);
 
-  const [openSidebar, setOpenSidebar] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef(null! as HTMLDivElement);
 
-  useClickOutside(sidebarRef, () => setOpenSidebar(false));
+  useClickOutside(sidebarRef, () => setIsSidebarOpen(false));
 
   return (
     <div
@@ -209,7 +214,7 @@ export default function App() {
           fixed z-30 inset-y-0 left-0 transform
           bg-gray-900 text-white w-80 md:w-1/3 p-4
           transition-transform duration-300 ease-in-out
-          ${openSidebar ? "translate-x-0" : "-translate-x-full"}
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:flex md:flex-col md:shrink-0
         `}
       >
@@ -219,17 +224,21 @@ export default function App() {
           onCreate={createNewConversation}
           onClear={(id: string) => () => deleteSelectedConversation(id)}
           onSelect={(id: string) => setCurrentChatID(id)}
-          isOpen={openSidebar}
+          isOpen={isSidebarOpen}
         />
       </div>
       <div className="flex flex-col w-full">
         <div className="flex gap-4">
           <button
             className="text-gray-100 p-2 z-50 md:hidden"
-            onClick={() => setOpenSidebar((prev) => !prev)}
+            onClick={() => setIsSidebarOpen((prev) => !prev)}
           >
             {/* Toggle sidebar visibility on mobile */}
-            {openSidebar ? <IoMdClose size={20} /> : <CiMenuBurger size={20} />}
+            {isSidebarOpen ? (
+              <IoMdClose size={20} />
+            ) : (
+              <CiMenuBurger size={20} />
+            )}
           </button>
           <GradientText className="text-4xl font-bold pl-4 !mx-0 md:hidden">
             FLUX

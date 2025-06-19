@@ -81,7 +81,7 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
           onSendMessage(userInput);
           setUserInput("");
         }}
-        className="flex gap-2 px-4"
+        className="flex gap-2 px-4 pb-4"
       >
         <input
           type="text"
