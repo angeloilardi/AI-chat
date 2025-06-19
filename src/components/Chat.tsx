@@ -36,19 +36,24 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
         // Only scroll if content is overflowing
         if (chatDiv.scrollHeight > chatDiv.clientHeight) {
           chatDiv.scrollTo({
-            top: latestUserMsg.offsetTop,
+            top: latestUserMsg.offsetTop - 50,
             behavior: "smooth",
           });
+          console.log(latestUserMsg.offsetTop);
         }
       }
     }
     console.log(chatWindow.current?.scrollHeight);
+    console.log(chatWindow.current?.clientHeight);
   }, [conversation?.messages]);
 
   return (
     <div className="rounded-lg shadow-lg border border-gray-700 w-full h-[90dvh] gap-6 flex flex-col p-2 flex-1 ">
-      <div className="mb-2 flex flex-col flex-1 overflow-y-auto p-4">
-        <div className="mt-auto" ref={chatWindow}>
+      <div
+        className="mb-2 flex flex-col flex-1 overflow-y-auto p-4"
+        ref={chatWindow}
+      >
+        <div className="mt-auto">
           {conversation?.messages.map((msg: Message, index: number) =>
             msg.role === "user" ? (
               <div key={index} className="mb-2 text-right">
