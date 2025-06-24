@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
 @import "tailwindcss";
 
 @theme inline {
@@ -5,6 +7,8 @@
   --color-primary-hover: #535bf2;
   --text-huge: 10rem;
   --animate-gradient: gradient 8s linear infinite;
+
+  --font-outfit: "Outfit", sans-serif;
 
   @keyframes gradient {
     0% {
@@ -29,6 +33,10 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+:root {
+  font-family: var(--font-outfit);
 }
 
 /* :root {

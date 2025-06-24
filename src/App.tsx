@@ -7,6 +7,8 @@ import GradientText from "./blocks/GradientText/GradientText";
 import { CiMenuBurger } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import useClickOutside from "./components/hooks/useClickOutside";
+import WelcomeScreen from "./components/WelcomeScrre";
+import DeleteConfirmationModal from "./components/DeleteConfirmationModal";
 
 interface Message {
   role: "user" | "model";
@@ -20,42 +22,39 @@ interface Conversation {
 }
 
 export default function App() {
-  // Initialize conversations and currentChatID together to avoid referencing each other
   const getInitialConversations = () => {
     const saved = localStorage.getItem("conversations");
     if (saved && saved !== "[]") {
-      return JSON.parse(saved) as Conversation[];
-    } else {
-      return [
-        {
-          id: uuidv4(),
-          title: "New chat",
-          messages: [],
-        },
-      ];
+      try {
+        const parsedConversations: Conversation[] = JSON.parse(saved);
+        return parsedConversations.filter(
+          (conv) => conv.messages && conv.messages.length > 0
+        );
+      } catch (error) {
+        console.error("Error parsing conversations from localStorage:", error);
+        return []; // Return empty array on parsing error
+      }
     }
+    return []; // Always return empty array if no saved chats or empty array string
   };
 
   const initialConversations = getInitialConversations();
   const [conversations, setConversations] =
     useState<Conversation[]>(initialConversations);
-  const [currentChatID, setCurrentChatID] = useState<string | null>(
-    initialConversations.length > 0 ? initialConversations[0].id : null
-  );
+
+  const [currentChatID, setCurrentChatID] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [chatToDeleteId, setChatToDeleteId] = useState<string | null>(null);
 
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 
-  useEffect(() => {
-    if (currentChatID && window.innerWidth < 768) {
-      setIsSidebarOpen(false);
-    }
-  }, [currentChatID]);
   const ai = new GoogleGenAI({
     apiKey: GEMINI_API_KEY,
   });
 
-  async function getChatResponse(userInput: string) {
+  async function getChatResponse(userInput: string): Promise<Message> {
     setIsLoading(true);
     try {
       const chat = ai.chats.create({
@@ -98,14 +97,47 @@ export default function App() {
     setCurrentChatID(newConv.id);
   };
 
-  const deleteSelectedConversation = (id: string) => {
-    setConversations((prev) => prev.filter((conv) => conv.id !== id));
-    if (currentChatID === id) {
-      setCurrentChatID(conversations[0]?.id || null);
-    }
+  const openDeleteModal = (id: string) => {
+    setChatToDeleteId(id);
+    setIsDeleteModalOpen(true);
   };
 
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setChatToDeleteId(null);
+  };
+
+  const confirmDeleteChat = () => {
+    if (chatToDeleteId) {
+      const updatedConversations = conversations.filter(
+        (conv) => conv.id !== chatToDeleteId
+      );
+      setConversations(updatedConversations);
+
+      if (currentChatID === chatToDeleteId) {
+        setCurrentChatID(updatedConversations[0]?.id || null);
+      }
+    }
+    closeDeleteModal();
+  };
+
+  const deleteSelectedConversation = (id: string) => {
+    openDeleteModal(id);
+  };
+
+  // const deleteSelectedConversation = (id: string) => {
+  //   setConversations((prev) => prev.filter((conv) => conv.id !== id));
+  //   if (currentChatID === id) {
+  //     setCurrentChatID(conversations[0]?.id || null);
+  //   }
+  // };
+
   const activeConversation = conversations.find((c) => c.id === currentChatID);
+
+  const chatToDeleteTitle = chatToDeleteId
+    ? conversations.find((conv) => conv.id === chatToDeleteId)?.title ||
+      "Untitled Chat"
+    : "";
 
   const handleSubmit = async (userInput: string) => {
     // If there are no conversations, create a new one and set it as active
@@ -204,6 +236,29 @@ export default function App() {
 
   useClickOutside(sidebarRef, () => setIsSidebarOpen(false));
 
+  const handleSelectConversation = (id: string) => {
+    setCurrentChatID(id);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false); // Close sidebar on mobile when a chat is selected
+    }
+  };
+
+  // Handler for "Start a New Chat" button on WelcomeScreen
+  const handleStartNewChat = () => {
+    createNewConversation(); // Create a new empty chat
+  };
+
+  const handleContinuePreviousChats = () => {
+    if (conversations.length > 0) {
+      setCurrentChatID(conversations[0].id); // Load the first existing chat
+      setIsSidebarOpen(true); // Optionally open sidebar to show existing chats on mobile
+    } else {
+      // Fallback: This path should ideally not be reached if the button is hidden
+      // by hasPreviousChats, but it's good to have a safe fallback.
+      createNewConversation();
+    }
+  };
+
   return (
     <div
       className={"h-screen flex bg-gradient-to-r from-[#485563] to-[#29323c]"}
@@ -215,41 +270,62 @@ export default function App() {
           bg-gray-900 text-white w-80 md:w-1/3 p-4
           transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          md:relative md:translate-x-0 md:flex md:flex-col md:shrink-0
+          ${
+            currentChatID
+              ? "md:relative md:translate-x-0 md:flex md:flex-col md:shrink-0"
+              : "md:hidden"
+          }
         `}
       >
         <Sidebar
           conversations={conversations}
           activeId={currentChatID}
           onCreate={createNewConversation}
-          onClear={(id: string) => () => deleteSelectedConversation(id)}
-          onSelect={(id: string) => setCurrentChatID(id)}
+          onDelete={deleteSelectedConversation}
+          onSelect={handleSelectConversation}
           isOpen={isSidebarOpen}
         />
       </div>
       <div className="flex flex-col w-full">
-        <div className="flex gap-4">
-          <button
-            className="text-gray-100 p-2 z-50 md:hidden"
-            onClick={() => setIsSidebarOpen((prev) => !prev)}
-          >
-            {/* Toggle sidebar visibility on mobile */}
-            {isSidebarOpen ? (
-              <IoMdClose size={20} />
-            ) : (
-              <CiMenuBurger size={20} />
-            )}
-          </button>
-          <GradientText className="text-4xl font-bold pl-4 !mx-0 md:hidden">
-            FLUX
-          </GradientText>
-        </div>
-        <Chat
-          conversation={activeConversation}
-          onSendMessage={handleSubmit}
-          isLoading={isLoading}
-        />
+        {currentChatID && (
+          <div className="flex gap-4 md:hidden">
+            <button
+              className="text-gray-100 p-2 z-50"
+              onClick={() => setIsSidebarOpen((prev) => !prev)}
+            >
+              {/* Toggle sidebar visibility on mobile */}
+              {isSidebarOpen ? (
+                <IoMdClose size={20} />
+              ) : (
+                <CiMenuBurger size={20} />
+              )}
+            </button>
+            <GradientText className="text-4xl font-bold pl-4 !mx-0">
+              FLUX
+            </GradientText>
+          </div>
+        )}
+
+        {currentChatID ? (
+          <Chat
+            conversation={activeConversation}
+            onSendMessage={handleSubmit}
+            isLoading={isLoading}
+          />
+        ) : (
+          <WelcomeScreen
+            onStartNewChat={handleStartNewChat}
+            onContinuePreviousChats={handleContinuePreviousChats}
+            hasPreviousChats={conversations.length > 0}
+          />
+        )}
       </div>
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDeleteChat}
+        conversationTitle={chatToDeleteTitle}
+      />
     </div>
   );
 }

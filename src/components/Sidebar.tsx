@@ -6,7 +6,7 @@ interface SidebarProps {
   conversations: { id: string; title: string }[];
   activeId: string | null;
   onCreate: () => void;
-  onClear: (id: string) => () => void;
+  onDelete: (id: string) => void;
   onSelect: (id: string) => void;
   isOpen?: boolean;
 }
@@ -15,13 +15,13 @@ export default function Sidebar({
   conversations,
   activeId,
   onCreate,
-  onClear,
+  onDelete,
   onSelect,
 }: SidebarProps) {
   return (
     <div>
       <div className="text-left mb-6">
-        <GradientText className="text-4xl font-bold mb-4 text-left">
+        <GradientText className="text-4xl font-bold mb-4 !mx-0">
           FLUX
         </GradientText>
         <p className="text-gray-300">Powered by Google Gemini AI</p>
@@ -37,8 +37,10 @@ export default function Sidebar({
       <p className="mb-4 font-bold">Coversations</p>
       {conversations.map((conversation) => (
         <li
-          className={`flex items-center gap-2 mb-2 p-2 cursor pointer rounded-md hover:bg-gray-600 ${
-            activeId === conversation.id ? "bg-gray-300 text-black" : ""
+          className={`flex items-center gap-2 mb-2 p-2 cursor pointer rounded-md ${
+            activeId === conversation.id
+              ? "bg-gray-300 text-black"
+              : "hover:bg-gray-600"
           }`}
           key={conversation.id}
           onClick={() => onSelect(conversation.id)}
@@ -46,7 +48,7 @@ export default function Sidebar({
           <IoIosChatbubbles />
           {conversation.title}
           <button
-            onClick={onClear(conversation.id)}
+            onClick={() => onDelete(conversation.id)}
             className="ml-auto cursor-pointer"
           >
             <MdOutlineDelete />

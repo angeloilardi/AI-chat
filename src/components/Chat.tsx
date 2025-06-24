@@ -43,8 +43,6 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
         }
       }
     }
-    console.log(chatWindow.current?.scrollHeight);
-    console.log(chatWindow.current?.clientHeight);
   }, [conversation?.messages]);
 
   return (
@@ -57,14 +55,14 @@ function Chat({ conversation, onSendMessage, isLoading }: ChatProps) {
           {conversation?.messages.map((msg: Message, index: number) =>
             msg.role === "user" ? (
               <div key={index} className="mb-2 text-right">
-                <small className="block text-gray-100">You</small>
+                <small className="block text-gray-100 mb-1">You</small>
                 <span className="inline-block p-2 rounded bg-gray-100">
                   {msg.parts[0]?.text}
                 </span>
               </div>
             ) : (
               <div key={index} className="mb-2 text-left">
-                <small className="block text-gray-100">Assistant</small>
+                <small className="block text-gray-100 mb-1">Assistant</small>
                 <MarkdownView
                   markdown={msg.parts[0].text}
                   className="bg-blue-100 p-2 rounded"
