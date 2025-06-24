@@ -18,7 +18,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     "text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-75";
   return (
     <div className="flex flex-col items-center justify-center h-full text-white p-4 text-center">
-      <GradientText className="text-5xl md:text-7xl font-extrabold mb-8 drop-shadow-lg !mx-0">
+      <GradientText className="text-5xl md:text-7xl font-extrabold mb-8">
         Welcome to FLUX
       </GradientText>
       <p className="text-lg md:text-xl mb-12 max-w-2xl">
@@ -41,11 +41,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </button>
         )}
       </div>
-      {!hasPreviousChats && (
-        <p className="mt-8 text-md text-gray-400">
-          (No previous chats found. Start a new one!)
-        </p>
-      )}
     </div>
   );
 };

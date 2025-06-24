@@ -125,13 +125,6 @@ export default function App() {
     openDeleteModal(id);
   };
 
-  // const deleteSelectedConversation = (id: string) => {
-  //   setConversations((prev) => prev.filter((conv) => conv.id !== id));
-  //   if (currentChatID === id) {
-  //     setCurrentChatID(conversations[0]?.id || null);
-  //   }
-  // };
-
   const activeConversation = conversations.find((c) => c.id === currentChatID);
 
   const chatToDeleteTitle = chatToDeleteId
@@ -239,13 +232,12 @@ export default function App() {
   const handleSelectConversation = (id: string) => {
     setCurrentChatID(id);
     if (window.innerWidth < 768) {
-      setIsSidebarOpen(false); // Close sidebar on mobile when a chat is selected
+      setIsSidebarOpen(false);
     }
   };
 
-  // Handler for "Start a New Chat" button on WelcomeScreen
   const handleStartNewChat = () => {
-    createNewConversation(); // Create a new empty chat
+    createNewConversation();
   };
 
   const handleContinuePreviousChats = () => {
