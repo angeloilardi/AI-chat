@@ -7,7 +7,7 @@ import GradientText from "./blocks/GradientText/GradientText";
 import { CiMenuBurger } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import useClickOutside from "./components/hooks/useClickOutside";
-import WelcomeScreen from "./components/WelcomeScrre";
+import WelcomeScreen from "./components/WelcomeScreen";
 import DeleteConfirmationModal from "./components/DeleteConfirmationModal";
 
 interface Message {
@@ -95,6 +95,7 @@ export default function App() {
     };
     setConversations([...conversations, newConv]);
     setCurrentChatID(newConv.id);
+    setIsSidebarOpen(false);
   };
 
   const openDeleteModal = (id: string) => {

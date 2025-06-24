@@ -20,7 +20,7 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <div>
-      <div className="text-left mb-6">
+      <div className="my-6">
         <GradientText className="text-4xl font-bold mb-4 !mx-0">
           FLUX
         </GradientText>
