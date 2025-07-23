@@ -1,54 +1,87 @@
-# React + TypeScript + Vite
+# AI Chat (React + TypeScript + Google Gemini)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Currently, two official plugins are available:
+This repository contains a web-based AI chatbot built using React, TypeScript, and the Google Gemini LLM (Language Model). It provides a user-friendly interface for interacting with the AI model and generating conversational responses.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Conversational AI:** Engage in interactive conversations with an AI powered by the Google Gemini LLM.
+- **Customizable Prompt:** The initial prompt used to instruct the LLM can be configured, tailoring the chatbot's personality and behavior.
+- **Persistent Chat History:** The chat history is maintained throughout the session, allowing for context-aware responses.
+- **Automated title creation for each conversation:** A 5-word summary of the conversation is used as the conversation's title
+- **TypeScript:** Codebase written in TypeScript for improved maintainability and type safety.
+- **Google Gemini Integration:** Utilizes the Google Gemini API for generating text and engaging in conversations.
+- **Easy Setup:** Simple installation and setup process using npm or yarn and environment variables.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Prerequisites
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- **Node.js (version 16 or higher)**
+- **npm or yarn package manager**
+- **Google Gemini API Key:** You'll need a Google Gemini API key to use the chatbot. [https://ai.google.dev/](https://ai.google.dev/) is a good place to start.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  Clone the repository:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+    ```bash
+    git clone https://github.com/angeloilardi/AI-chat.git
+    cd AI-chat
+    ```
+
+2.  Install the dependencies:
+
+    ```bash
+    npm install  # or yarn install
+    ```
+
+## Configuration
+
+1.  **Set up your Google Gemini API key:** You need to set your Google Gemini API key as an environment variable. This is typically done using an `.env` file at the root of the project or directly in your system's environment variables. Use the variable name `REACT_APP_GEMINI_API_KEY`.
+
+    - **Using `.env` file (recommended):**
+
+      Create a file named `.env.local` in the root directory of the project and add your API key:
+
+      ```
+      REACT_APP_GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+      ```
+
+      **Important Considerations for React:**
+
+      - Prefix your environment variable with `REACT_APP_` to make it accessible in your React components. React uses special handling for environment variables.
+      - `.env.local` is typically the preferred name for local development environment variables in React projects.
+      - Ensure that `.env.local` is added to your `.gitignore` to prevent accidentally committing your API key.
+
+## Running the Application
+
+1.  Start the development server:
+
+    ```bash
+    npm start  # or yarn start
+    ```
+
+2.  Open your web browser and navigate to the address provided by the development server (usually `http://localhost:3000`).
+
+3.  Start chatting with your AI assistant!
+
+## Customization
+
+- **Styling and UI:** Customize the look and feel of the chatbot by modifying the React components and CSS/styling files.
+
+- **Adding Features:** Extend the chatbot's functionality by adding new components, implementing features like image generation, or integrating with other services.
+
+- **Exploring Gemini API Options:** Experiment with different parameters and features available in the Google Gemini API to fine-tune the chatbot's behavior and capabilities. Consult the official Gemini API documentation for details.
+
+## Contributing
+
+Contributions are welcome! If you find any bugs or have suggestions for improvement, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- [Tailwind CSS](https://tailwindcss.com/) - For providing a utility-first CSS framework.
+- [Google Gemini API](https://ai.google.dev/) - For powering the conversational AI capabilities.

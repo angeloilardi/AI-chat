@@ -84,7 +84,6 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem("conversations", JSON.stringify(conversations));
-    console.log("Conversations saved to localStorage:", conversations);
   }, [conversations]);
 
   const createNewConversation = () => {
