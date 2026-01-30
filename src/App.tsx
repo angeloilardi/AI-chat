@@ -28,7 +28,7 @@ export default function App() {
       try {
         const parsedConversations: Conversation[] = JSON.parse(saved);
         return parsedConversations.filter(
-          (conv) => conv.messages && conv.messages.length > 0
+          (conv) => conv.messages && conv.messages.length > 0,
         );
       } catch (error) {
         console.error("Error parsing conversations from localStorage:", error);
@@ -58,7 +58,7 @@ export default function App() {
     setIsLoading(true);
     try {
       const chat = ai.chats.create({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         history: activeConversation?.messages,
       });
       const response = await chat.sendMessage({ message: userInput });
@@ -110,7 +110,7 @@ export default function App() {
   const confirmDeleteChat = () => {
     if (chatToDeleteId) {
       const updatedConversations = conversations.filter(
-        (conv) => conv.id !== chatToDeleteId
+        (conv) => conv.id !== chatToDeleteId,
       );
       setConversations(updatedConversations);
 
@@ -151,8 +151,8 @@ export default function App() {
                 ...conv,
                 messages: [...conv.messages, assistantResponse as Message],
               }
-            : conv
-        )
+            : conv,
+        ),
       );
       return;
     }
@@ -167,8 +167,8 @@ export default function App() {
                 { role: "user", parts: [{ text: userInput }] },
               ],
             }
-          : conv
-      )
+          : conv,
+      ),
     );
     const assistantResponse = await getChatResponse(userInput);
     setConversations((prev: Conversation[]) =>
@@ -178,8 +178,8 @@ export default function App() {
               ...conv,
               messages: [...conv.messages, assistantResponse as Message],
             }
-          : conv
-      )
+          : conv,
+      ),
     );
   };
 
@@ -204,8 +204,8 @@ export default function App() {
                       ...conv,
                       title: response.text ?? "Untitled Conversation",
                     }
-                  : conv
-              )
+                  : conv,
+              ),
             );
           }
         }
