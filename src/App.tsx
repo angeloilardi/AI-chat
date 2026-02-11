@@ -252,9 +252,7 @@ export default function App() {
   };
 
   return (
-    <div
-      className={"h-screen flex bg-gradient-to-r from-[#485563] to-[#29323c]"}
-    >
+    <div className={"h-dvh flex bg-gradient-to-r from-[#485563] to-[#29323c]"}>
       <div
         ref={sidebarRef}
         className={`
@@ -278,7 +276,7 @@ export default function App() {
           isOpen={isSidebarOpen}
         />
       </div>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full max-h-dvh">
         {currentChatID && (
           <div className="flex gap-4 md:hidden">
             <button
